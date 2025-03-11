@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"user-management/src/config"
 	"user-management/src/models"
 
@@ -27,7 +26,6 @@ func NewUserRepository() UserRepository {
 }
 
 func (r *userRepository) Create(user *models.User) error {
-	fmt.Println("teste Repository")
 	return r.db.Create(user).Error
 }
 

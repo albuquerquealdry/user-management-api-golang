@@ -19,8 +19,9 @@ func main() {
 	// Configuração do Gin e Rotas
 	r := gin.Default()
 	r.POST("/user", userController.CreateUser)
-	// r.GET("/users/:id", userController.CreateUser)
-	// r.GET("/users", userController.GetAll)
-
+	r.GET("/users/:id", userController.GetUserById)
+	r.GET("/users", userController.GetAllUsers)
+	r.PUT("/users/:id", userController.UpdateUser)
+	r.DELETE("/users/:id", userController.DeleteUser)
 	r.Run(":8080")
 }
