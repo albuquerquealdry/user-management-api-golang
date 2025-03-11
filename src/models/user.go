@@ -15,5 +15,4 @@ type User struct {
 	Score       int    `gorm:"not null"`
 	Status      string `gorm:"not null"`
 	MotherName  string `gorm:"not null"`
-	CreatedWhen string `gorm:"type:timestamp;default:CURRENT_TIMESTAMP"`
 }
