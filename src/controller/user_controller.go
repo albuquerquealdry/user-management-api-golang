@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"user-management/src/dto"
 	"user-management/src/models"
 	"user-management/src/service"
 
@@ -49,7 +50,23 @@ func (uc *userController) GetUserById(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"erro": "User not Found"})
 		return
 	}
-	c.JSON(http.StatusOK, user)
+
+	response := dto.UserResponse{
+		ID:          user.ID,
+		Name:        user.Name,
+		Email:       user.Email,
+		Birthday:    user.Birthday,
+		Address:     user.Address,
+		Postalcode:  user.Postalcode,
+		CPF:         user.CPF,
+		Nationality: user.Nationality,
+		Score:       user.Score,
+		Status:      user.Status,
+		MotherName:  user.MotherName,
+		CreatedAt:   user.CreatedAt,
+		UpdatedAt:   user.UpdatedAt,
+	}
+	c.JSON(http.StatusOK, response)
 }
 
 func (uc *userController) GetAllUsers(c *gin.Context) {
@@ -88,11 +105,11 @@ func (uc *userController) UpdateUser(c *gin.Context) {
 	existingUser.MotherName = user.MotherName
 
 	if err := uc.userService.UpdateUser(existingUser); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("User %d was updated", id)})
 }
 
 func (uc *userController) DeleteUser(c *gin.Context) {

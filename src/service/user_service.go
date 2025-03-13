@@ -1,8 +1,10 @@
 package service
 
 import (
+	"fmt"
 	"user-management/src/models"
 	"user-management/src/repository"
+	"user-management/src/utils"
 )
 
 type UserService interface {
@@ -24,6 +26,12 @@ func NewUserService(userRepo repository.UserRepository) UserService {
 }
 
 func (s *userService) CreateUser(user *models.User) error {
+
+	hashedPassword, err := utils.HashPassword(user.Password)
+	if err != nil {
+		return fmt.Errorf("falid to hash password")
+	}
+	user.Password = hashedPassword
 	return s.userRepo.Create(user)
 }
 
