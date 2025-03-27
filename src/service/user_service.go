@@ -27,7 +27,7 @@ func NewUserService(userRepo repository.UserRepository) UserService {
 	}
 }
 
-go func (s *userService) CreateUser(user *models.User) error {
+func (s *userService) CreateUser(user *models.User) error {
 	var wg sync.WaitGroup
 	wg.Add(1)
 	hashedPassword, err := utils.HashPassword(user.Password)
