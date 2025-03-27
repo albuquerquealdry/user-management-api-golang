@@ -2,6 +2,8 @@ package service
 
 import (
 	"fmt"
+	"strconv"
+	"sync"
 	"user-management/src/models"
 	"user-management/src/repository"
 	"user-management/src/utils"
@@ -25,11 +27,16 @@ func NewUserService(userRepo repository.UserRepository) UserService {
 	}
 }
 
-func (s *userService) CreateUser(user *models.User) error {
-
+go func (s *userService) CreateUser(user *models.User) error {
+	var wg sync.WaitGroup
+	wg.Add(1)
 	hashedPassword, err := utils.HashPassword(user.Password)
 	if err != nil {
 		return fmt.Errorf("falid to hash password")
+	}
+	cpfIsValid := utils.IsValidCPF(strconv.Itoa(user.CPF))
+	if cpfIsValid != true {
+		return fmt.Errorf("cpf is invalid")
 	}
 	user.Password = hashedPassword
 	return s.userRepo.Create(user)
