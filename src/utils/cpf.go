@@ -1,21 +1,30 @@
 package utils
 
 import (
+	"fmt"
 	"strconv"
 	"sync"
+	"time"
 )
 
-func IsValidCPF(cpf string, wg *sync.WaitGroup) bool {
+func IsValidCPF(cpf string, wg *sync.WaitGroup, result *bool, errChan chan error) {
 	defer wg.Done()
+
+	fmt.Println("Chegou no CPF")
+	time.Sleep(10 * time.Second)
+
 	if len(cpf) != 11 {
-		return false
+		*result = false
+		errChan <- fmt.Errorf("CPF inválido: tamanho incorreto")
+		return
 	}
 
 	digits := make([]int, 11)
 	for i := 0; i < 11; i++ {
 		num, err := strconv.Atoi(string(cpf[i]))
 		if err != nil {
-			return false
+			*result = false
+			errChan <- fmt.Errorf("CPF inválido: contém caracteres não numéricos")
 		}
 		digits[i] = num
 	}
@@ -37,5 +46,8 @@ func IsValidCPF(cpf string, wg *sync.WaitGroup) bool {
 		secondDigit = 0
 	}
 
-	return firstDigit == digits[9] && secondDigit == digits[10]
+	*result = firstDigit == digits[9] && secondDigit == digits[10]
+	if !*result {
+		errChan <- fmt.Errorf("CPF inválido: dígitos verificadores incorretos")
+	}
 }

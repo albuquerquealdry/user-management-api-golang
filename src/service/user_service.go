@@ -29,15 +29,29 @@ func NewUserService(userRepo repository.UserRepository) UserService {
 
 func (s *userService) CreateUser(user *models.User) error {
 	var wg sync.WaitGroup
-	wg.Add(1)
-	hashedPassword, err := utils.HashPassword(user.Password)
-	if err != nil {
-		return fmt.Errorf("falid to hash password")
+	errChan := make(chan error, 2)
+
+	var hashedPassword string
+	var cpfIsValid bool
+
+	wg.Add(2)
+
+	go utils.HashPassword(user.Password, &wg, &hashedPassword, errChan)
+
+	go utils.IsValidCPF(strconv.Itoa(user.CPF), &wg, &cpfIsValid, errChan)
+
+	wg.Wait()
+	close(errChan)
+
+	for err := range errChan {
+		if err != nil {
+			return err
+		}
 	}
-	cpfIsValid := utils.IsValidCPF(strconv.Itoa(user.CPF))
-	if cpfIsValid != true {
-		return fmt.Errorf("cpf is invalid")
+	if !cpfIsValid {
+		return fmt.Errorf("CPF inválido")
 	}
+
 	user.Password = hashedPassword
 	return s.userRepo.Create(user)
 }

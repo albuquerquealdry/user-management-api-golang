@@ -1,16 +1,20 @@
 package utils
 
 import (
+	"fmt"
 	"sync"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-func HashPassword(password string, wg *sync.WaitGroup) (string, error) {
+func HashPassword(password string, wg *sync.WaitGroup, result *string, errChan chan error) {
 	defer wg.Done()
+
+	fmt.Println("Chegou no  HASH")
 	hashBytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return "", err
+		errChan <- err
+		return
 	}
-	return string(hashBytes), nil
+	*result = string(hashBytes)
 }
