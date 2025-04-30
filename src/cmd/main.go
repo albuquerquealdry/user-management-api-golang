@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	"user-management/src/config"
 	"user-management/src/controller"
 	"user-management/src/repository"
@@ -23,5 +24,16 @@ func main() {
 	r.GET("/users", userController.GetAllUsers)
 	r.PUT("/users/:id", userController.UpdateUser)
 	r.DELETE("/users/:id", userController.DeleteUser)
+
+	//  Readines and liveness Routers
+
+	r.GET("/heatlhz", func(ctx *gin.Context) {
+		ctx.Status(http.StatusOK)
+	})
+
+	r.GET("/readyz", func(ctx *gin.Context) {
+		ctx.Status(http.StatusOK)
+	})
+
 	r.Run(":8080")
 }
