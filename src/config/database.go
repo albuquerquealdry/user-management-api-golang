@@ -67,3 +67,14 @@ func ConnectDatabase() {
 		fmt.Println("Error during migration:", err)
 	}
 }
+
+func IsDatabaseReady() bool {
+	sqlDB, err := DB.DB()
+	if err != nil {
+		return false
+	}
+	if err := sqlDB.Ping(); err != nil {
+		return false
+	}
+	return true
+}

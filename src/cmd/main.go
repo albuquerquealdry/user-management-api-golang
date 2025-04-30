@@ -16,6 +16,7 @@ func main() {
 	userRepo := repository.NewUserRepository()
 	userService := service.NewUserService(userRepo)
 	userController := controller.NewUserController(userService)
+	healthController := controller.NewHealthController()
 
 	// Configuração do Gin e Rotas
 	r := gin.Default()
@@ -27,13 +28,11 @@ func main() {
 
 	//  Readines and liveness Routers
 
-	r.GET("/heatlhz", func(ctx *gin.Context) {
+	r.GET("/healthz", func(ctx *gin.Context) {
 		ctx.Status(http.StatusOK)
 	})
 
-	r.GET("/readyz", func(ctx *gin.Context) {
-		ctx.Status(http.StatusOK)
-	})
-
+	r.GET("/readyz", healthController.Readiness)
+	r.GET("/readyz", healthController.Liveness)
 	r.Run(":8080")
 }
